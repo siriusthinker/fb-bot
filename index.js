@@ -56,12 +56,12 @@ app.post('/webhook/', function (req, res) {
   		    sendGenericMessage(sender)
   		    continue
   	    } else if(text === 'Red'){
-			sendTextMessage(sender, "Wow! You just picked Red! =)")
-			pickColor(sender, "You may pick again (or talk to yourself. =))).")
+			sendTextMessage(sender, "Wow! I had a funny feeling you'd pick that. =)")
+			pickColor(sender, "Let's try one more...!")
 			continue
 		} else if(text === 'Green'){
-			sendTextMessage(sender, "You just picked Green! Cool! I'm tired, Bye! =)")
-			pickColor(sender, "You may pick again (or talk to yourself. =))).")
+			sendTextMessage(sender, "Omg! I think you might be health conscious! =)")
+			pickColor(sender, "Let's try one more...!")
 			continue
 		}
 		  sendTextMessage(sender, text.substring(0, 200))
@@ -112,13 +112,13 @@ function pickColor(sender,text) {
 				"content_type":"text",
 				"title":"Red",
 				"payload":"pickedRed",
-				"image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Disc_Plain_red.svg/2000px-Disc_Plain_red.svg.png"
+				"image_url":"https://www.brandsoftheworld.com/sites/default/files/styles/logo-thumbnail/public/062011/redhorsebeer.ai_.png"
 			},
 			{
 				"content_type":"text",
 				"title":"Green",
 				"payload":"pickedGreen",
-				"image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Ski_trail_rating_symbol-green_circle.svg/2000px-Ski_trail_rating_symbol-green_circle.svg.png"
+				"image_url":"https://static1.squarespace.com/static/572539b1e321405ebae05fef/t/5848358af5e23130d0e84301/1481127310148/Stamp-webOnly-GreenTea.png"
 			}
 		]
 	}
