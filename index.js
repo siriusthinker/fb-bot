@@ -55,8 +55,16 @@ app.post('/webhook/', function (req, res) {
   	    if (text === 'Generic') {
   		    sendGenericMessage(sender)
   		    continue
-  	    }
-  	    sendTextMessage(sender, text.substring(0, 200))
+  	    } else if(text === 'Red'){
+			sendTextMessage(sender, "You just picked Red! Hot! I'm tired, Bye! =)")
+			pickColor(sender)
+			continue
+		} else if(text === 'Green'){
+			sendTextMessage(sender, "You just picked Green! Cool! I'm tired, Bye! =)")
+			pickColor(sender)
+			continue
+		}
+		  sendTextMessage(sender, text.substring(0, 200))
       }
       if (event.postback) {
 		  let payload = event.postback.payload
@@ -64,10 +72,6 @@ app.post('/webhook/', function (req, res) {
 		  if(payload === 'getStarted') {
 			  pickColor(sender);
 			  continue
-		  } else if(payload === 'pickedRed'){
-			  sendTextMessage(sender, "You just picked Red! Hot! I'm tired, Bye! =)", FB_PAGE_ACCESS_TOKEN)
-		  } else if(payload === 'pickedGreen'){
-			  sendTextMessage(sender, "You just picked Green! Cool! I'm tired, Bye! =)", FB_PAGE_ACCESS_TOKEN)
 		  } else {
 			  let text = JSON.stringify(event.postback)
 			  sendTextMessage(sender, "Postback received: " + text.substring(0, 200), FB_PAGE_ACCESS_TOKEN)
