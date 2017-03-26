@@ -56,11 +56,22 @@ app.post('/webhook/', function (req, res) {
   		    sendGenericMessage(sender)
   		    continue
   	    }
-  	    sendTextMessage(sender, "Text received, echo: " + text.substring(0, 200))
+  	    sendTextMessage(sender, text.substring(0, 200))
       }
       if (event.postback) {
-  	    let text = JSON.stringify(event.postback)
-  	    sendTextMessage(sender, "Postback received: "+text.substring(0, 200), FB_PAGE_ACCESS_TOKEN)
+		  let payload = event.postback.payload
+
+		  if(payload === 'getStarted') {
+			  pickColor(sender);
+			  continue
+		  } else if(payload === 'pickedRed'){
+			  sendTextMessage(sender, "You just picked Red! Hot! I'm tired, Bye! =)", FB_PAGE_ACCESS_TOKEN)
+		  } else if(payload === 'pickedGreen'){
+			  sendTextMessage(sender, "You just picked Green! Cool! I'm tired, Bye! =)", FB_PAGE_ACCESS_TOKEN)
+		  } else {
+			  let text = JSON.stringify(event.postback)
+			  sendTextMessage(sender, "Postback received: " + text.substring(0, 200), FB_PAGE_ACCESS_TOKEN)
+		  }
   	    continue
       }
     }
@@ -87,6 +98,41 @@ function callThreadSettingsAPI(data) { //Thread Reference API
 			console.error("Failed calling Thread Reference API", response.statusCode, response.statusMessage, body.error);
 		}
 	});
+}
+
+function pickColor(sender) {
+	let messageData = {
+		text:"Welcome! I think I need to rest for now. Just send your message and i'll echo it back to you. But first, try to pick a color, it's fun.",
+		"quick_replies":[
+			{
+				"content_type":"text",
+				"title":"Red",
+				"payload":"pickedRed",
+				"image_url":"http://petersfantastichats.com/img/red.png"
+			},
+			{
+				"content_type":"text",
+				"title":"Green",
+				"payload":"pickedGreen",
+				"image_url":"http://petersfantastichats.com/img/green.png"
+			}
+		]
+	}
+	request({
+		url: 'https://graph.facebook.com/v2.6/me/messages',
+		qs: {access_token:FB_PAGE_ACCESS_TOKEN},
+		method: 'POST',
+		json: {
+			recipient: {id:sender},
+			message: messageData,
+		}
+	}, function(error, response, body) {
+		if (error) {
+			console.log('Error sending messages: ', error)
+		} else if (response.body.error) {
+			console.log('Error: ', response.body.error)
+		}
+	})
 }
 
 function createGetStarted() {
