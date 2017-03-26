@@ -70,7 +70,37 @@ app.post('/webhook/', function (req, res) {
 // Spin up the server
 app.listen(app.get('port'), function() {
 	console.log('running on port', app.get('port'))
+	createGetStarted();
 })
+
+function callThreadSettingsAPI(data) { //Thread Reference API
+	request({
+		uri: 'https://graph.facebook.com/v2.6/me/thread_settings',
+		qs: { access_token: FB_PAGE_ACCESS_TOKEN },
+		method: 'POST',
+		json: data
+
+	}, function (error, response, body) {
+		if (!error && response.statusCode == 200) {
+			console.log("Thread Settings successfully changed!");
+		} else {
+			console.error("Failed calling Thread Reference API", response.statusCode, response.statusMessage, body.error);
+		}
+	});
+}
+
+function createGetStarted() {
+	var data = {
+		setting_type: "call_to_actions",
+		thread_state: "new_thread",
+		call_to_actions:[
+			{
+				payload:"getStarted"
+			}
+		]
+	};
+	callThreadSettingsAPI(data);
+}
 
 function sendTextMessage(sender, text) {
     let messageData = { text:text }
