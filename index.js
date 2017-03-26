@@ -4,6 +4,8 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const request = require('request')
 const app = express()
+const FB_PAGE_ACCESS_TOKEN = "EAAappnhe9Q8BAIlaEPHDZBmmHKjqqQxWyupepAsDJRKnEK5rGlpeO1bqJca1D4wwhKykIgRm2OYnrTb0yRDRZBk5ZBDcUva5ZBBOe5WSNpazPLWviJC3EXUF43JEUZBasU16hMcuzaf9A70uC4RcDWxwbR0GSjZB32E1M6UpZCuagZDZD"
+const FB_WEBHOOK_VERIFY_TOKEN = "my_voice_is_my_password_verify_me"
 
 app.set('port', (process.env.PORT || 5000))
 
@@ -15,13 +17,17 @@ app.use(bodyParser.json())
 
 // Index route
 app.get('/', function (req, res) {
-	res.send('Hello world, I am a chat bot')
+	res.send('Hello, I am tristan\'s bot. How may I help you?')
 })
 
 // for Facebook verification
 app.get('/webhook/', function (req, res) {
-	if (req.query['hub.verify_token'] === 'my_voice_is_my_password_verify_me') {
+	if (req.query['hub.verify_token'] === FB_WEBHOOK_VERIFY_TOKEN) {
 		res.send(req.query['hub.challenge'])
+
+		setTimeout(function () {
+			doSubscribeRequest();
+		}, 3000);
 	}
 	res.send('Error, wrong token')
 })
@@ -54,14 +60,12 @@ app.post('/webhook/', function (req, res) {
       }
       if (event.postback) {
   	    let text = JSON.stringify(event.postback)
-  	    sendTextMessage(sender, "Postback received: "+text.substring(0, 200), token)
+  	    sendTextMessage(sender, "Postback received: "+text.substring(0, 200), FB_PAGE_ACCESS_TOKEN)
   	    continue
       }
     }
     res.sendStatus(200)
 })
-
-const token = "EAAappnhe9Q8BAIlaEPHDZBmmHKjqqQxWyupepAsDJRKnEK5rGlpeO1bqJca1D4wwhKykIgRm2OYnrTb0yRDRZBk5ZBDcUva5ZBBOe5WSNpazPLWviJC3EXUF43JEUZBasU16hMcuzaf9A70uC4RcDWxwbR0GSjZB32E1M6UpZCuagZDZD"
 
 // Spin up the server
 app.listen(app.get('port'), function() {
@@ -72,7 +76,7 @@ function sendTextMessage(sender, text) {
     let messageData = { text:text }
     request({
 	    url: 'https://graph.facebook.com/v2.6/me/messages',
-	    qs: {access_token:token},
+	    qs: {access_token:FB_PAGE_ACCESS_TOKEN},
 	    method: 'POST',
 		json: {
 		    recipient: {id:sender},
@@ -121,7 +125,7 @@ function sendGenericMessage(sender) {
     }
     request({
 	    url: 'https://graph.facebook.com/v2.6/me/messages',
-	    qs: {access_token:token},
+	    qs: {access_token:FB_PAGE_ACCESS_TOKEN},
 	    method: 'POST',
 	    json: {
 		    recipient: {id:sender},
@@ -136,3 +140,18 @@ function sendGenericMessage(sender) {
     })
 }
 
+function doSubscribeRequest() {
+	request({
+			method: 'POST',
+			uri: "https://graph.facebook.com/v2.6/me/subscribed_apps?access_token=" + FB_PAGE_ACCESS_TOKEN
+		},
+		function (error, response, body) {
+			if (error) {
+				console.error('Error while subscription: ', error);
+			} else {
+				console.log('Subscription result: ', response.body);
+			}
+		});
+}
+
+doSubscribeRequest();
