@@ -56,12 +56,12 @@ app.post('/webhook/', function (req, res) {
   		    sendGenericMessage(sender)
   		    continue
   	    } else if(text === 'Red'){
-			sendTextMessage(sender, "You just picked Red! Hot! I'm tired, Bye! =)")
-			pickColor(sender)
+			sendTextMessage(sender, "Wow! You just picked Red! =)")
+			pickColor(sender, "You may pick again (or talk to yourself. =))).")
 			continue
 		} else if(text === 'Green'){
 			sendTextMessage(sender, "You just picked Green! Cool! I'm tired, Bye! =)")
-			pickColor(sender)
+			pickColor(sender, "You may pick again (or talk to yourself. =))).")
 			continue
 		}
 		  sendTextMessage(sender, text.substring(0, 200))
@@ -70,7 +70,7 @@ app.post('/webhook/', function (req, res) {
 		  let payload = event.postback.payload
 
 		  if(payload === 'getStarted') {
-			  pickColor(sender);
+			  pickColor(sender, "Welcome! I think I need to rest for now. Just send your message and i'll echo it back to you. But first, try to pick a color, it's fun.");
 			  continue
 		  } else {
 			  let text = JSON.stringify(event.postback)
@@ -104,21 +104,21 @@ function callThreadSettingsAPI(data) { //Thread Reference API
 	});
 }
 
-function pickColor(sender) {
+function pickColor(sender,text) {
 	let messageData = {
-		text:"Welcome! I think I need to rest for now. Just send your message and i'll echo it back to you. But first, try to pick a color, it's fun.",
+		text:text,
 		"quick_replies":[
 			{
 				"content_type":"text",
 				"title":"Red",
 				"payload":"pickedRed",
-				"image_url":"http://petersfantastichats.com/img/red.png"
+				"image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Disc_Plain_red.svg/2000px-Disc_Plain_red.svg.png"
 			},
 			{
 				"content_type":"text",
 				"title":"Green",
 				"payload":"pickedGreen",
-				"image_url":"http://petersfantastichats.com/img/green.png"
+				"image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Ski_trail_rating_symbol-green_circle.svg/2000px-Ski_trail_rating_symbol-green_circle.svg.png"
 			}
 		]
 	}
